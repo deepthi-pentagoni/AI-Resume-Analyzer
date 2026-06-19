@@ -57,7 +57,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.image("assets/logo.png", width=120)
+st.image("logo.png", width=120)
 
 with st.sidebar:
 
