@@ -6,7 +6,6 @@ An AI-powered Resume Analyzer built with Python, Streamlit, Groq API, and Llama 
 
 🚀 Features
   📄 Upload Resume (PDF)
-  
   🤖 AI-powered Resume Analysis
   🎯 ATS Score Estimation
   📈 Resume Keyword Match
