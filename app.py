@@ -2,7 +2,9 @@ import re
 import streamlit as st
 from resume_parser import extract_text_from_pdf
 from gemini_analyzer import analyze_resume
-from styles import inject_styles        
+from styles import inject_styles          # ← new import
+
+
 
 
 def calculate_match(resume_text: str, job_role: str) -> int:
@@ -47,7 +49,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-inject_styles()   # inject all custom CSS
+inject_styles()   
 
 
 # ─────────────────────────────────────────────
@@ -108,7 +110,7 @@ st.divider()
 
 
 # ─────────────────────────────────────────────
-#  Upload + Role Selection  (above the tabs)
+#  Upload + Role Selection  
 # ─────────────────────────────────────────────
 
 col_role, col_upload = st.columns([1, 2], gap="large")
@@ -127,40 +129,68 @@ with col_role:
 
 with col_upload:
     st.markdown('<p class="eyebrow">Your Résumé</p>', unsafe_allow_html=True)
-    uploaded_file = st.file_uploader(
-        "Upload your résumé (PDF)",
-        type=["pdf"],
-        label_visibility="collapsed",
-    )
 
-st.markdown("<br>", unsafe_allow_html=True)
+    use_sample = st.toggle("🧪 Use sample résumé for testing", value=False)
 
-
-# ─────────────────────────────────────────────
-#  Tabs
-
-tab1, tab2, tab3 = st.tabs(["📄  Overview", "🤖  AI Analysis", "📊  Dashboard"])
-
-resume_text = ""
-match_score = completeness = words = characters = lines = 0   # safe defaults
-
-# ── Tab 1 : Overview ──────────────────────────
-
-with tab1:
-    if not uploaded_file:
+    if use_sample:
+        uploaded_file = None   
         st.markdown(
             """
-            <div class="resume-card" style="text-align:center;padding:3rem 2rem;">
-              <p style="font-size:2.5rem;margin-bottom:0.5rem;">📂</p>
-              <p style="font-size:1.1rem;color:#64748b;">
-                Upload a PDF résumé above to begin your analysis.
+            <div style="background:#0f1f3d;border:1px solid #1e40af;border-radius:8px;
+                        padding:0.75rem 1rem;margin-top:0.5rem;">
+              <p style="color:#93c5fd;margin:0;font-size:0.9rem;">
+                📄 <strong>sample.pdf</strong> loaded — scroll down to explore the analysis.
               </p>
             </div>
             """,
             unsafe_allow_html=True,
         )
     else:
-        resume_text = extract_text_from_pdf(uploaded_file)
+        uploaded_file = st.file_uploader(
+            "Upload your résumé (PDF)",
+            type=["pdf"],
+            label_visibility="collapsed",
+        )
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+
+# ─────────────────────────────────────────────
+#  Tabs
+# ─────────────────────────────────────────────
+
+tab1, tab2, tab3 = st.tabs(["📄  Overview", "🤖  AI Analysis", "📊  Dashboard"])
+
+resume_text = ""
+match_score = completeness = words = characters = lines = 0   # safe defaults
+
+
+if use_sample:
+    try:
+        with open("sample.pdf", "rb") as f:
+            resume_text = extract_text_from_pdf(f)
+    except FileNotFoundError:
+        st.error("❌ sample.pdf not found. Make sure it's in the same folder as app.py.")
+        st.stop()
+
+# ── Tab 1 : Overview ──────────────────────────
+
+with tab1:
+    if not uploaded_file and not use_sample:
+        st.markdown(
+            """
+            <div class="resume-card" style="text-align:center;padding:3rem 2rem;">
+              <p style="font-size:2.5rem;margin-bottom:0.5rem;">📂</p>
+              <p style="font-size:1.1rem;color:#64748b;">
+                Upload a PDF résumé above — or toggle <strong>Use sample résumé</strong> to try a demo.
+              </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        if uploaded_file:
+            resume_text = extract_text_from_pdf(uploaded_file)
 
         if not resume_text.strip():
             st.error("❌ Could not extract text from this PDF. Please try a text-based PDF.")
@@ -284,8 +314,8 @@ with tab1:
 # ── Tab 2 : AI Analysis ───────────────────────
 
 with tab2:
-    if not uploaded_file:
-        st.info("Upload a résumé first to run the AI analysis.")
+    if not uploaded_file and not use_sample:
+        st.info("Upload a résumé first — or use the sample résumé toggle above.")
     else:
         if st.button("🚀 Run AI Analysis", use_container_width=True):
             with st.spinner("Analyzing your résumé with Llama 3.3…"):
@@ -336,7 +366,7 @@ with tab2:
 # ── Tab 3 : Dashboard ─────────────────────────
 
 with tab3:
-    if not uploaded_file:
+    if not uploaded_file and not use_sample:
         st.info("Upload a résumé to view the dashboard.")
     else:
         st.markdown('<p class="eyebrow">Resume Dashboard</p>', unsafe_allow_html=True)
@@ -391,7 +421,9 @@ with tab3:
             )
 
 
+# ─────────────────────────────────────────────
 #  Footer
+# ─────────────────────────────────────────────
 
 st.divider()
 st.caption("📄 AI Resume Analyzer · Built with Python · Streamlit · Groq · Llama 3.3 · PyPDF2")
