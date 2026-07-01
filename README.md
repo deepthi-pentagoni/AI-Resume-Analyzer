@@ -17,7 +17,7 @@ Features
   • Resume Statistics
   • Download Analysis Report
 
-🛠 Tech Stack
+Tech Stack
 
   • Python
   • Streamlit
