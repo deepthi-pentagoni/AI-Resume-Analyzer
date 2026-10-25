@@ -2,7 +2,7 @@ import re
 import streamlit as st
 from resume_parser import extract_text_from_pdf
 from gemini_analyzer import analyze_resume
-from styles import inject_styles          # ← new import
+from styles import inject_styles         
 
 
 
@@ -38,9 +38,8 @@ def render_chip(label: str) -> str:
     return f'<span class="tech-chip">{label}</span>'
 
 
-# ─────────────────────────────────────────────
 #  Page Config
-# ─────────────────────────────────────────────
+
 
 st.set_page_config(
     page_title="AI Resume Analyzer",
@@ -52,9 +51,8 @@ st.set_page_config(
 inject_styles()   
 
 
-# ─────────────────────────────────────────────
 #  Sidebar
-# ─────────────────────────────────────────────
+
 
 with st.sidebar:
     st.markdown('<p class="eyebrow">Resume Analyzer</p>', unsafe_allow_html=True)
@@ -90,9 +88,9 @@ with st.sidebar:
     st.caption("Built with Python · Streamlit · Groq · Llama 3.3 · PyPDF2")
 
 
-# ─────────────────────────────────────────────
+
 #  Hero Header
-# ─────────────────────────────────────────────
+
 
 st.markdown(
     """
@@ -109,9 +107,8 @@ st.markdown(
 st.divider()
 
 
-# ─────────────────────────────────────────────
 #  Upload + Role Selection  
-# ─────────────────────────────────────────────
+
 
 col_role, col_upload = st.columns([1, 2], gap="large")
 
@@ -155,9 +152,8 @@ with col_upload:
 st.markdown("<br>", unsafe_allow_html=True)
 
 
-# ─────────────────────────────────────────────
 #  Tabs
-# ─────────────────────────────────────────────
+
 
 tab1, tab2, tab3 = st.tabs(["📄  Overview", "🤖  AI Analysis", "📊  Dashboard"])
 
@@ -173,7 +169,7 @@ if use_sample:
         st.error("❌ sample.pdf not found. Make sure it's in the same folder as app.py.")
         st.stop()
 
-# ── Tab 1 : Overview ──────────────────────────
+# ── Tab 1 : Overview
 
 with tab1:
     if not uploaded_file and not use_sample:
@@ -421,9 +417,7 @@ with tab3:
             )
 
 
-# ─────────────────────────────────────────────
 #  Footer
-# ─────────────────────────────────────────────
 
 st.divider()
 st.caption("📄 AI Resume Analyzer · Built with Python · Streamlit · Groq · Llama 3.3 · PyPDF2")
